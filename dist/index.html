@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#000033" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>DiscoFlight</title>
+    <script type="module" crossorigin src="/assets/index-7r7XV41n.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BdEAXptV.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Écran d'accueil -->
+      <div id="welcome-screen" class="screen">
+        <h1>DiscoFlight</h1>
+        <div class="story-container">
+          <p class="story-text">
+            Bienvenue, copilote d'élite ! Vous êtes à bord du tout dernier prototype furtif de l'armée, le DISCO (Dispositif Intelligent de Survol et de Camouflage Optimal).
+          </p>
+          <p class="story-text">
+            Mais... il y a un problème. L'ingénieur chargé du projet, un certain Maurice, a mal interprété l'acronyme et a intégré un 'Mode Disco'... avec lumières clignotantes et musique disco activable via deux gros boutons rouges.
+          </p>
+          <p class="story-text">
+            Pire encore, la chaise sur laquelle vous êtes assis est une chaise à roulettes, car Maurice pensait qu'un cockpit 'ergonomique' augmenterait vos performances.
+          </p>
+          <p class="story-text">
+            Votre mission : garder l'équilibre et ne pas activer le mode Disco, sinon les radars ennemis vous repèrent ! Si la barre de détection en haut de l'écran se remplit, c'est fini pour vous. Bonne chance, pilote !
+          </p>
+        </div>
+        <button id="start-button">Commencer la mission</button>
+      </div>
+
+      <!-- Écran d'orientation -->
+      <div id="orientation-screen" class="screen hidden">
+        <p>Veuillez tourner votre appareil en mode paysage</p>
+      </div>
+
+      <!-- Écran de jeu -->
+      <div id="game-screen" class="screen hidden">
+        <div id="detection-bar"></div>
+        <video id="sky-video" loop muted playsinline>
+          <source src="/assets/sky-view-Iyii7iu-.mp4" type="video/mp4">
+        </video>
+        <img id="cockpit" src="/assets/cockpit-roBvnewW.png" alt="Cockpit">
+        <img id="copilot" src="/assets/copilot-CZqSh67V.png" alt="Copilot">
+      </div>
+
+      <!-- Écran de game over -->
+      <div id="gameover-screen" class="screen hidden">
+        <img id="explosion" src="/assets/explosion-9TfwVo-4.jpg" alt="Explosion">
+        <button id="restart-button" class="hidden">Recommencer</button>
+      </div>
+    </div>
+  </body>
+</html>

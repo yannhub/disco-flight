@@ -303,10 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
   showScreen("welcome-screen");
 
   // Request device orientation permission on iOS
-  if (typeof DeviceOrientationEvent.requestPermission === "function") {
+  if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
     startButton.addEventListener("click", async () => {
       try {
-        const permission = await DeviceOrientationEvent.requestPermission();
+        const permission = await (DeviceOrientationEvent as any).requestPermission();
         if (permission === "granted") {
           startGame();
         }

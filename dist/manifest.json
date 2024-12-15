@@ -1,0 +1,21 @@
+{
+  "name": "DiscoFlight",
+  "short_name": "DiscoFlight",
+  "description": "Un jeu de pilotage d'avion furtif avec un mode disco inattendu !",
+  "start_url": "/",
+  "display": "fullscreen",
+  "background_color": "#000033",
+  "theme_color": "#000033",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
