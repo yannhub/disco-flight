@@ -40,6 +40,7 @@ La vue est composée tel quel :
 
 L'avion penche automatiquement vers la gauche ou la droite de manière aleatoire et plus ou moins rapidement ce qui modifie l'angle de l'assiette de l'avion. L'assiette est comprise entre -30 degres et 30 degrés, 0 correspondant à la position d'équilbre à plat.
 La video de ciel tourne de manière inversee à l'assiette de l'avion.
+Le cockpit et le pilote eux ne tournent pas.
 En fonction de l'asiette de l'avion, le copilote  glisse vers la gauche ou la droite.
 Quand l'assiette est en position centrale, le copilote reste immobile. 
 Plus l'assiette est  negative, plus le copilote va glisser rapidement vers la gauche.
