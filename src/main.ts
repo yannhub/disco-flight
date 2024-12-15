@@ -13,9 +13,10 @@ const MAX_TILT = 30;
 const DETECTION_MAX_TIME = 30; // seconds
 const DISCO_COOLDOWN = 5; // seconds
 const COPILOT_BASE_SPEED = 0.5; // Base speed for copilot movement
-const COPILOT_MOVEMENT_SPEED = 2;
 const PLANE_TILT_CHANGE_INTERVAL = 3000; // ms
 const TILT_SMOOTHING_FACTOR = 0.05; // Controls how smoothly the tilt changes
+const GYRO_COMPENSATION_FACTOR = 0.8; // Force de la compensation gyroscopique
+const DEBUG_MODE = true; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
 let gameState: GameState = "welcome";
@@ -25,6 +26,7 @@ let detectionLevel = 0;
 let isDiscoMode = false;
 let discoTimeout: number | null = null;
 let lastTiltChange = Date.now();
+let playerTilt = 0; // Nouvelle variable pour stocker l'inclinaison du joueur
 
 // Audio elements
 let engineSound: AudioContext;
@@ -40,7 +42,6 @@ const discoMusic = new Audio(discoMusicSrc);
 const explosionSound = new Audio(explosionSoundSrc);
 
 // DOM Elements
-const app = document.querySelector<HTMLDivElement>("#app")!;
 const welcomeScreen = document.getElementById("welcome-screen")!;
 const orientationScreen = document.getElementById("orientation-screen")!;
 const gameScreen = document.getElementById("game-screen")!;
@@ -48,9 +49,14 @@ const gameoverScreen = document.getElementById("gameover-screen")!;
 const startButton = document.getElementById("start-button")!;
 const restartButton = document.getElementById("restart-button")!;
 const skyVideo = document.querySelector<HTMLVideoElement>("#sky-video")!;
-const cockpit = document.querySelector<HTMLImageElement>("#cockpit")!;
 const copilot = document.querySelector<HTMLImageElement>("#copilot")!;
 const detectionBar = document.getElementById("detection-bar")!;
+
+// Create debug window
+const debugWindow = document.createElement("div");
+debugWindow.id = "debug-window";
+debugWindow.style.display = DEBUG_MODE ? "block" : "none";
+document.body.appendChild(debugWindow);
 
 // Game functions
 function showScreen(screenId: Screen) {
@@ -103,7 +109,7 @@ function checkOrientation() {
 
 function updateDetectionBar() {
   const percentage = (detectionLevel / DETECTION_MAX_TIME) * 100;
-  detectionBar.style.setProperty("width", `${percentage}%`);
+  detectionBar.style.setProperty("--detection-percentage", `${percentage}%`);
 }
 
 function startDiscoMode() {
@@ -117,6 +123,9 @@ function startDiscoMode() {
   if (discoTimeout) {
     clearTimeout(discoTimeout);
   }
+  discoTimeout = window.setTimeout(() => {
+    stopDiscoMode();
+  }, DISCO_COOLDOWN * 1000);
 }
 
 function stopDiscoMode() {
@@ -126,6 +135,11 @@ function stopDiscoMode() {
   gameScreen.classList.remove("disco-mode");
   discoMusic.pause();
   discoMusic.currentTime = 0;
+
+  if (discoTimeout) {
+    clearTimeout(discoTimeout);
+    discoTimeout = null;
+  }
 }
 
 function updateEngineSound() {
@@ -151,19 +165,27 @@ function updatePlaneAssiette() {
 
 function updateCopilotPosition() {
   // Calculate copilot movement speed based on plane tilt
-  // The further from 0, the faster it moves
   const tiltPercentage = Math.abs(planeAssiette) / MAX_TILT;
   const movementSpeed = COPILOT_BASE_SPEED * tiltPercentage;
 
   // Get current position as percentage (default to 50 if not set)
   const currentPosition = parseFloat(copilot.style.left) || 50;
 
-  // Calculate new position
+  // Calculate new position with both plane tilt and player compensation
   let newPosition = currentPosition;
+
+  // 1. Mouvement dû à l'inclinaison de l'avion
   if (planeAssiette !== 0) {
-    // Move left or right based on tilt direction
-    const direction = planeAssiette > 0 ? 1 : -1;
-    newPosition += direction * movementSpeed;
+    const planeTiltDirection = planeAssiette > 0 ? 1 : -1;
+    newPosition += planeTiltDirection * movementSpeed;
+  }
+
+  // 2. Compensation du joueur (dans la direction opposée)
+  // Si le joueur penche à gauche (négatif), on pousse le copilote vers la gauche
+  if (playerTilt !== 0) {
+    const compensationForce =
+      (playerTilt / MAX_TILT) * GYRO_COMPENSATION_FACTOR;
+    newPosition -= compensationForce; // On soustrait car on veut aller dans la direction du tilt
   }
 
   // Limit position to screen bounds (10% to 90% to keep copilot visible)
@@ -175,11 +197,22 @@ function updateCopilotPosition() {
   // Check if copilot hits the edges
   if (newPosition <= 10 || newPosition >= 90) {
     startDiscoMode();
-  } else {
-    if (discoTimeout === null) {
-      discoTimeout = window.setTimeout(stopDiscoMode, DISCO_COOLDOWN * 1000);
-    }
   }
+}
+
+function updateDebugInfo() {
+  if (!DEBUG_MODE) return;
+
+  debugWindow.innerHTML = `
+    <div class="debug-content">
+      <h3>Debug Info</h3>
+      <p>Gyroscope (gamma): ${playerTilt.toFixed(2)}°</p>
+      <p>Plane Tilt: ${planeAssiette.toFixed(2)}°</p>
+      <p>Copilot Position: ${(parseFloat(copilot.style.left) || 50).toFixed(
+        2
+      )}%</p>
+    </div>
+  `;
 }
 
 function updateGameState() {
@@ -189,9 +222,10 @@ function updateGameState() {
     updatePlaneAssiette();
     updateCopilotPosition();
     updateEngineSound();
+    updateDebugInfo();
 
     if (isDiscoMode) {
-      detectionLevel += 1 / 60; // Assuming 60 FPS
+      detectionLevel += 1 / 60;
       updateDetectionBar();
 
       if (detectionLevel >= DETECTION_MAX_TIME) {
@@ -209,8 +243,8 @@ function updateGameState() {
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
   if (gameState === "playing") {
-    const tilt = event.gamma || 0; // Get device tilt
-    planeAssiette = Math.max(-MAX_TILT, Math.min(MAX_TILT, tilt));
+    // Stocker l'inclinaison du joueur (gamma est l'inclinaison gauche/droite)
+    playerTilt = event.gamma || 0;
   }
 }
 

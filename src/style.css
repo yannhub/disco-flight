@@ -2,6 +2,7 @@
   --primary-color: #ffffff;
   --background-color: #000033;
   --detection-bar-height: 20px;
+  --detection-percentage: 0%;
 }
 
 * {
@@ -92,21 +93,24 @@ button:hover {
 }
 
 #detection-bar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: var(--detection-bar-height);
   background-color: #333;
+  z-index: 1000;
 }
 
 #detection-bar::before {
   content: "";
   position: absolute;
   height: 100%;
-  width: 0%;
+  width: var(--detection-percentage);
   background-color: red;
   transition: width 0.3s ease;
+  left: 0;
+  top: 0;
 }
 
 #sky-video {
@@ -166,4 +170,33 @@ button:hover {
   100% {
     filter: hue-rotate(360deg) brightness(1.2);
   }
+}
+
+/* Debug Window */
+#debug-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #00ff00;
+  padding: 15px;
+  border-radius: 5px;
+  font-family: monospace;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.debug-content {
+  text-align: left;
+}
+
+.debug-content h3 {
+  margin: 0 0 10px 0;
+  color: #00ff00;
+}
+
+.debug-content p {
+  margin: 5px 0;
+  font-size: 14px;
 }
