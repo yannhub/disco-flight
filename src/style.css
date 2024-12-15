@@ -115,8 +115,10 @@ button:hover {
 
 #sky-video {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  top: -25%;
+  left: -15%;
+  width: 130%;
+  height: 130%;
   object-fit: cover;
 }
 

@@ -9,14 +9,14 @@ type Screen =
   | "gameover-screen";
 
 // Constants
-const MAX_TILT = 30;
+const MAX_TILT = 45;
 const DETECTION_MAX_TIME = 30; // seconds
 const DISCO_COOLDOWN = 5; // seconds
-const COPILOT_BASE_SPEED = 0.5; // Base speed for copilot movement
+const COPILOT_BASE_SPEED = 1; // Base speed for copilot movement
 const PLANE_TILT_CHANGE_INTERVAL = 3000; // ms
 const TILT_SMOOTHING_FACTOR = 0.05; // Controls how smoothly the tilt changes
-const GYRO_COMPENSATION_FACTOR = 0.8; // Force de la compensation gyroscopique
-const DEBUG_MODE = true; // Flag pour afficher/masquer la fenêtre de debug
+const GYRO_COMPENSATION_FACTOR = -0.8; // Force de la compensation gyroscopique
+const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
 let gameState: GameState = "welcome";
@@ -206,7 +206,7 @@ function updateDebugInfo() {
   debugWindow.innerHTML = `
     <div class="debug-content">
       <h3>Debug Info</h3>
-      <p>Gyroscope (gamma): ${playerTilt.toFixed(2)}°</p>
+      <p>Gyroscope (beta): ${playerTilt.toFixed(2)}°</p>
       <p>Plane Tilt: ${planeAssiette.toFixed(2)}°</p>
       <p>Copilot Position: ${(parseFloat(copilot.style.left) || 50).toFixed(
         2
@@ -243,8 +243,8 @@ function updateGameState() {
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
   if (gameState === "playing") {
-    // Stocker l'inclinaison du joueur (gamma est l'inclinaison gauche/droite)
-    playerTilt = event.gamma || 0;
+    // En mode paysage, beta contrôle l'inclinaison gauche/droite
+    playerTilt = event.beta || 0;
   }
 }
 
