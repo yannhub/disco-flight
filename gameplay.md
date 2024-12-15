@@ -40,7 +40,10 @@ La vue est composée tel quel :
 
 L'avion penche automatiquement vers la gauche ou la droite de manière aleatoire.
 Lorsque l'avion penche vers la gauche ou la droite, le ciel tourne vers la gauche ou la droite mais le cockpit reste immobile.
-En fonction de l'angle de rotation une force de gravité est appliquée sur le copilote qui va glisser vers la gauche ou la droite.
+En fonction de l'asiette de l'avion, une force de gravité est appliquée sur le copilote qui va glisser vers la gauche ou la droite.
+Quand l'assiette est en position centrale, le copilote reste immobile. 
+Plus l'assiette est  negativement inclinée, plus le copilote va glisser rapidement vers la gauche.
+Plus l'assiette est positivement inclinée, plus le copilote va glisser rapidement vers la droite.
 
 #### Contrôles
 

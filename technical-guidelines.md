@@ -15,6 +15,7 @@ Le jeu doit utiliser les technologies suivantes :
 ## Architecture Technique
 
 ### 1. Structure du Projet
+
 ```
 /src
   /assets       # Assets de jeu
@@ -26,16 +27,18 @@ Le jeu doit utiliser les technologies suivantes :
 ```
 
 ### Bundler
+
 Vite 5
 
 ### 4. Moteur Physique
-- Utilisation de `Matter.js` pour:
-  - Détection de collisions
-  - Gravité et forces
-  - Vélocité et accélération
-  - Hitboxes optimisées
+
+- Détection de collisions
+- Gravité et forces
+- Vélocité et accélération
+- Hitboxes optimisées
 
 ### 5. Audio Engine
+
 - Web Audio API pour:
   - Effets sonores avec spatial audio
   - Musique de fond avec fade in/out
@@ -43,6 +46,7 @@ Vite 5
   - Compression dynamique du son
 
 ### 6. Effets Visuels
+
 - Système de particules pour effets disco
 - Shaders GLSL pour:
   - Effets de lumière dynamiques
@@ -51,12 +55,14 @@ Vite 5
   - Bloom effect
 
 ### 7. Contrôles
+
 - Gyroscope via `DeviceOrientation API`
 - Touch events multi-touch
 - Calibration automatique du gyroscope
 - Fallback clavier pour debug
 
 ### 8. Performance
+
 - RequestAnimationFrame pour boucle de jeu
 - Garbage collection minimisé
 - Asset pooling
@@ -64,12 +70,14 @@ Vite 5
 - GPU acceleration forcée
 
 ### 9. Responsive Design
+
 - Viewport meta tags optimisés
 - Layout fluide avec CSS Grid/Flexbox
 - Media queries pour différents devices
 - Adaptation dynamique de la qualité
 
 ### 10. State Management
+
 - Architecture ECS (Entity Component System)
 - State machine pour gestion des scènes
 - Observable pattern pour events
@@ -78,18 +86,21 @@ Vite 5
 ## Optimisations Spécifiques
 
 ### 1. Gestion de la Mémoire
+
 - Destruction propre des objets non utilisés
 - Limitation du nombre de particules
 - Texture atlas pour grouper les images
 - Pooling des objets fréquents
 
 ### 2. Performances Graphiques
+
 - Utilisation de `transform: translateZ(0)`
 - Batch rendering pour les sprites
 - Hardware acceleration via CSS
 - Réduction des layer compositing
 
 ### 3. Optimisation Mobile
+
 - Touch events avec debounce
 - Gestion de la batterie
 - Adaptation de la qualité selon device
