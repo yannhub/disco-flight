@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>DiscoFlight</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="orientation-message" class="hidden">
+        Please rotate your device to landscape mode
+      </div>
+      <div id="game-container" class="hidden">
+        <div id="detection-bar"></div>
+        <video id="sky-video" loop muted playsinline></video>
+        <div id="cockpit"></div>
+        <div id="copilot"></div>
+        <div id="disco-effects" class="hidden"></div>
+      </div>
+      <div id="menu-screen">
+        <h1>DiscoFlight</h1>
+        <div id="story-text" class="scrollable"></div>
+        <button id="start-button">Commencer la mission</button>
+      </div>
+      <div id="game-over" class="hidden">
+        <div id="explosion"></div>
+        <button id="restart-button" class="hidden">Recommencer</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
