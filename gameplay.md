@@ -2,10 +2,6 @@
 
 ## Écran d'accueil
 
-Tant que le telephone est tenu en mode portrait un texte indique au joueur de changer d'orientation.
-
-Quand l'oreientation est bien en paysage l'ecran d'introduction apparait.
-
 ### Histoire d'introduction
 
 Sur l'écran d'accueil, un texte humoristique explique le contexte du jeu :
@@ -25,39 +21,37 @@ Puis vient le texte humouristique, qui doit être scrollable si besoin.
 
 En dessous un bouton "Commencer la mission" permet de lancer le jeu.
 
+
 ## Description de la vue en jeu
+
+Tant que le telephone est tenu en mode portrait un texte indique au joueur de changer d'orientation.
+Quand l'orientation est bien en paysage le jeu commence.
 
 La vue est composée tel quel :
 
 - En arriere plan, on voit une vidéo de ciel qui tourne en boucle. (sky-view.mp4)
-- Par dessus on voit le cockpit de l'avion. (cockpit.png)
-- En avant plan, on voit le copilote intialement placé en bas de l'ecran et centré horizontalement. (copilot.png)
-- En haut de l'ecran, se trouve la barre de detection verte.
+- Par dessus on voit le cockpit de l'avion aligner en bas de l'ecran. L'image prend toute la largeur de l'ecran mais garde son aspect ratio. (cockpit.png)
+- Par dessus, on voit le copilote centré horizontalement et aligné en bas de l'ecran. (copilot.png)
+- Par dessus se trouve la barre de detection en haut de l'ecran. (dessiné en html, css et js)
 
 ## Mécanique de jeu
 
 ### Mouvements de l'avion et du copilote
 
-L'avion penche automatiquement vers la gauche ou la droite de manière aleatoire.
-Lorsque l'avion penche vers la gauche ou la droite, le ciel tourne vers la gauche ou la droite mais le cockpit reste immobile.
-En fonction de l'asiette de l'avion, une force de gravité est appliquée sur le copilote qui va glisser vers la gauche ou la droite.
+L'avion penche automatiquement vers la gauche ou la droite de manière aleatoire et plus ou moins rapidement ce qui modifie l'angle de l'assiette de l'avion. L'assiette est comprise entre -30 degres et 30 degrés, 0 correspondant à la position d'équilbre à plat.
+La video de ciel tourne de manière inversee à l'assiette de l'avion.
+En fonction de l'asiette de l'avion, le copilote  glisse vers la gauche ou la droite.
 Quand l'assiette est en position centrale, le copilote reste immobile. 
-Plus l'assiette est  negativement inclinée, plus le copilote va glisser rapidement vers la gauche.
-Plus l'assiette est positivement inclinée, plus le copilote va glisser rapidement vers la droite.
+Plus l'assiette est  negative, plus le copilote va glisser rapidement vers la gauche.
+Plus l'assiette est positive, plus le copilote va glisser rapidement vers la droite.
 
 #### Contrôles
 
-Lorsque le joueur incline le téléphone à gauche ou à droite, il compense la force de gravité pour garder l'équilibre du copilot et éviter qu'il ne glisse vers la gauche ou la droite.
-
-### Barre de détection
-
-- Chaque seconde passée en mode Disco remplit la barre en rouge.
-- Le maximum est de 30 secondes
-- Une fois pleine, la vidéo de Game Over se lance.
+Lorsque le joueur incline le téléphone à gauche ou à droite, il compense la force qui fait glisser le pilote vers la gauche ou la droite.
 
 ### Musique de fond
 
-- En arriere plan, un bruit de moteur est généré via une api javascript.
+- En arriere plan, un bruit de moteur est généré via une api javascript. Le bruit varie en fonction de l'assiette de l'avion.
 
 ### Mode Disco
 
@@ -66,6 +60,12 @@ Lorsque le copilote touche les bords droite ou gauche de l'ecran, l'avion passe 
 - Une musique disco entraînante démarre. (disco-music.mp3)
 - Des effets de lumières multicolores clignotent sur le cockpit.
 - Le mode disco se coupe quand le pilote ne touche plus les bords pendant 5 secondes.
+
+### Barre de détection
+
+- Chaque seconde passée en mode Disco remplit la barre en rouge.
+- Le maximum est de 30 secondes
+- Une fois pleine, on passe en game over.
 
 ### Game Over (vidéo et bouton recommencer)
 
