@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/disco-flight/dist",
+  base: "/disco-flight",
   server: {
     https: {
       key: "./certificates/key.pem", // Clé privée
@@ -11,7 +11,7 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    outDir: "dist",
+    outDir: "docs",
     assetsDir: "assets",
     emptyOutDir: true,
     sourcemap: true,
