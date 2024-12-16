@@ -249,9 +249,9 @@ function handleDeviceOrientation(event: DeviceOrientationEvent) {
 }
 
 function startGame() {
+  gameState = "playing";
   if (!checkOrientation()) return;
 
-  gameState = "playing";
   detectionLevel = 0;
   planeAssiette = 0;
   targetPlaneAssiette = 0;
@@ -289,12 +289,16 @@ function handleGameOver() {
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", startGame);
 window.addEventListener("orientationchange", () => {
-  // Wait for the orientation change to complete
-  setTimeout(checkOrientation, 100);
+  if (gameState !== "welcome") {
+    // Wait for the orientation change to complete
+    setTimeout(checkOrientation, 100);
+  }
 });
 window.addEventListener("resize", () => {
-  // Wait for the resize to complete
-  setTimeout(checkOrientation, 100);
+  if (gameState !== "welcome") {
+    // Wait for the resize to complete
+    setTimeout(checkOrientation, 100);
+  }
 });
 window.addEventListener("deviceorientation", handleDeviceOrientation);
 
@@ -306,7 +310,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
     startButton.addEventListener("click", async () => {
       try {
-        const permission = await (DeviceOrientationEvent as any).requestPermission();
+        const permission = await (
+          DeviceOrientationEvent as any
+        ).requestPermission();
         if (permission === "granted") {
           startGame();
         }
