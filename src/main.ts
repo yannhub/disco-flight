@@ -12,10 +12,10 @@ type Screen =
 const MAX_TILT = 45;
 const DETECTION_MAX_TIME = 30; // seconds
 const DISCO_COOLDOWN = 5; // seconds
-const COPILOT_BASE_SPEED = 1; // Base speed for copilot movement
+const COPILOT_BASE_SPEED = 4; // Base speed for copilot movement
 const PLANE_TILT_CHANGE_INTERVAL = 3000; // ms
 const TILT_SMOOTHING_FACTOR = 0.05; // Controls how smoothly the tilt changes
-const GYRO_COMPENSATION_FACTOR = -0.8; // Force de la compensation gyroscopique
+const GYRO_COMPENSATION_FACTOR = -4; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
@@ -28,6 +28,7 @@ let isDiscoMode = false;
 let discoTimeout: number | null = null;
 let lastTiltChange = Date.now();
 let playerTilt = 0; // Nouvelle variable pour stocker l'inclinaison du joueur
+let discoMusicPosition = 0; // Store the music position when pausing
 
 // Audio elements
 let engineSound: AudioContext;
@@ -121,7 +122,7 @@ function startDiscoMode() {
 
   isDiscoMode = true;
   gameScreen.classList.add("disco-mode");
-  discoMusic.currentTime = 0;
+  discoMusic.currentTime = discoMusicPosition;
   discoMusic.play();
 
   if (discoTimeout) {
@@ -137,8 +138,8 @@ function stopDiscoMode() {
 
   isDiscoMode = false;
   gameScreen.classList.remove("disco-mode");
+  discoMusicPosition = discoMusic.currentTime;
   discoMusic.pause();
-  discoMusic.currentTime = 0;
 
   if (discoTimeout) {
     clearTimeout(discoTimeout);
