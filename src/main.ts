@@ -61,6 +61,38 @@ debugWindow.id = "debug-window";
 debugWindow.style.display = DEBUG_MODE ? "block" : "none";
 document.body.appendChild(debugWindow);
 
+// PWA Installation
+let deferredPrompt: any;
+const installButton = document.createElement('button');
+installButton.classList.add('install-button');
+installButton.textContent = 'Installer l\'application';
+installButton.style.display = 'none';
+document.body.appendChild(installButton);
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installButton.style.display = 'block';
+});
+
+installButton.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('Application installée');
+    }
+    deferredPrompt = null;
+    installButton.style.display = 'none';
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('Application installée avec succès');
+  installButton.style.display = 'none';
+  deferredPrompt = null;
+});
+
 // Game functions
 function showScreen(screenId: Screen) {
   [welcomeScreen, orientationScreen, gameScreen, gameoverScreen].forEach(
