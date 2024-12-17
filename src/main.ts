@@ -20,6 +20,7 @@ const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
 let gameState: GameState = "welcome";
+let landscapeMode = false;
 let planeAssiette = 0;
 let targetPlaneAssiette = 0; // New variable to store the target tilt
 let detectionLevel = 0;
@@ -70,8 +71,9 @@ function showScreen(screenId: Screen) {
 
 function checkOrientation() {
   if (window.innerHeight > window.innerWidth) {
-    showScreen("orientation-screen");
+    landscapeMode = false;
     if (gameState === "playing") {
+      showScreen("orientation-screen");
       // Pause game elements
       skyVideo.pause();
       if (engineSound) {
@@ -80,6 +82,7 @@ function checkOrientation() {
     }
     return false;
   } else {
+    landscapeMode = true;
     // If we were in orientation screen and now in correct orientation
     if (
       document
@@ -97,6 +100,7 @@ function checkOrientation() {
           oscillator.type = "sawtooth";
           oscillator.start();
         }
+        updateGameState();
       } else {
         showScreen(
           gameState === "welcome" ? "welcome-screen" : "gameover-screen"
@@ -216,9 +220,7 @@ function updateDebugInfo() {
 }
 
 function updateGameState() {
-  if (!checkOrientation()) return;
-
-  if (gameState === "playing") {
+  if (gameState === "playing" && landscapeMode) {
     updatePlaneAssiette();
     updateCopilotPosition();
     updateEngineSound();
@@ -250,8 +252,6 @@ function handleDeviceOrientation(event: DeviceOrientationEvent) {
 
 function startGame() {
   gameState = "playing";
-  if (!checkOrientation()) return;
-
   detectionLevel = 0;
   planeAssiette = 0;
   targetPlaneAssiette = 0;
@@ -266,6 +266,7 @@ function startGame() {
   oscillator.type = "sawtooth";
   gainNode.gain.value = 0.1;
 
+  checkOrientation();
   showScreen("game-screen");
   skyVideo.play();
   oscillator.start();
@@ -289,16 +290,12 @@ function handleGameOver() {
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", startGame);
 window.addEventListener("orientationchange", () => {
-  if (gameState !== "welcome") {
-    // Wait for the orientation change to complete
-    setTimeout(checkOrientation, 100);
-  }
+  // Wait for the orientation change to complete
+  setTimeout(checkOrientation, 100);
 });
 window.addEventListener("resize", () => {
-  if (gameState !== "welcome") {
-    // Wait for the resize to complete
-    setTimeout(checkOrientation, 100);
-  }
+  // Wait for the resize to complete
+  setTimeout(checkOrientation, 100);
 });
 window.addEventListener("deviceorientation", handleDeviceOrientation);
 
