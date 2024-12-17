@@ -29,6 +29,7 @@ let discoTimeout: number | null = null;
 let lastTiltChange = Date.now();
 let playerTilt = 0; // Nouvelle variable pour stocker l'inclinaison du joueur
 let discoMusicPosition = 0; // Store the music position when pausing
+let lastFrameTime = 0; // Store last frame timestamp
 
 // Audio elements
 let engineSound: AudioContext;
@@ -101,7 +102,7 @@ function checkOrientation() {
           oscillator.type = "sawtooth";
           oscillator.start();
         }
-        updateGameState();
+        updateGameState(performance.now());
       } else {
         showScreen(
           gameState === "welcome" ? "welcome-screen" : "gameover-screen"
@@ -118,19 +119,20 @@ function updateDetectionBar() {
 }
 
 function startDiscoMode() {
-  if (isDiscoMode) return;
+  if (isDiscoMode) {
+    if (discoTimeout) {
+      clearTimeout(discoTimeout);
+    }
+    discoTimeout = window.setTimeout(() => {
+      stopDiscoMode();
+    }, DISCO_COOLDOWN * 1000);
+    return;
+  }
 
   isDiscoMode = true;
   gameScreen.classList.add("disco-mode");
   discoMusic.currentTime = discoMusicPosition;
   discoMusic.play();
-
-  if (discoTimeout) {
-    clearTimeout(discoTimeout);
-  }
-  discoTimeout = window.setTimeout(() => {
-    stopDiscoMode();
-  }, DISCO_COOLDOWN * 1000);
 }
 
 function stopDiscoMode() {
@@ -220,15 +222,19 @@ function updateDebugInfo() {
   `;
 }
 
-function updateGameState() {
+function updateGameState(timestamp: number) {
   if (gameState === "playing" && landscapeMode) {
+    // Calculate delta time in seconds
+    const deltaTime = (timestamp - lastFrameTime) / 1000;
+    lastFrameTime = timestamp;
+
     updatePlaneAssiette();
     updateCopilotPosition();
     updateEngineSound();
     updateDebugInfo();
 
     if (isDiscoMode) {
-      detectionLevel += 1 / 60;
+      detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
       updateDetectionBar();
 
       if (detectionLevel >= DETECTION_MAX_TIME) {
@@ -257,6 +263,7 @@ function startGame() {
   planeAssiette = 0;
   targetPlaneAssiette = 0;
   isDiscoMode = false;
+  lastFrameTime = performance.now(); // Initialize the last frame time
 
   // Initialize audio context after user interaction
   engineSound = new AudioContext();
@@ -272,7 +279,7 @@ function startGame() {
   skyVideo.play();
   oscillator.start();
 
-  updateGameState();
+  requestAnimationFrame(updateGameState); // Start the game loop
 }
 
 function handleGameOver() {
@@ -284,7 +291,7 @@ function handleGameOver() {
 
   setTimeout(() => {
     restartButton.classList.remove("hidden");
-  }, 5000);
+  }, 2000);
 }
 
 // Event Listeners

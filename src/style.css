@@ -154,6 +154,23 @@ button:hover {
   object-fit: cover;
 }
 
+#restart-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 1000;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+}
+
 /* Disco Mode Effects */
 .disco-mode #cockpit {
   animation: disco-lights 0.5s infinite;
