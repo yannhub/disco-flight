@@ -253,24 +253,25 @@ function updateGameState(timestamp: number) {
   if (gameState === "playing" && landscapeMode) {
     // Calculate delta time in seconds
     const deltaTime = (timestamp - lastFrameTime) / 1000;
-    lastFrameTime = timestamp;
+    if (deltaTime >= 1 / 60) {
+      lastFrameTime = timestamp;
+      updatePlaneAssiette();
+      updateCopilotPosition();
+      updateEngineSound();
+      updateDebugInfo();
 
-    updatePlaneAssiette();
-    updateCopilotPosition();
-    updateEngineSound();
-    updateDebugInfo();
+      if (isDiscoMode) {
+        detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
+      }
+      updateDetectionBar();
+      if (detectionLevel >= DETECTION_MAX_TIME) {
+        gameState = "gameover";
+        handleGameOver();
+      }
 
-    if (isDiscoMode) {
-      detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
+      // Update only sky video rotation, not the cockpit
+      skyVideo.style.transform = `rotate(${-planeAssiette}deg)`;
     }
-    updateDetectionBar();
-    if (detectionLevel >= DETECTION_MAX_TIME) {
-      gameState = "gameover";
-      handleGameOver();
-    }
-
-    // Update only sky video rotation, not the cockpit
-    skyVideo.style.transform = `rotate(${-planeAssiette}deg)`;
 
     requestAnimationFrame(updateGameState);
   }
