@@ -9,13 +9,13 @@ type Screen =
   | "gameover-screen";
 
 // Constants
-const MAX_TILT = 45;
-const DETECTION_MAX_TIME = 30; // seconds
+const MAX_TILT = 40;
+const DETECTION_MAX_TIME = 25; // seconds
 const DISCO_COOLDOWN = 5; // seconds
 const COPILOT_BASE_SPEED = 4; // Base speed for copilot movement
-const PLANE_TILT_CHANGE_INTERVAL = 3000; // ms
-const TILT_SMOOTHING_FACTOR = 0.05; // Controls how smoothly the tilt changes
-const GYRO_COMPENSATION_FACTOR = -4; // Force de la compensation gyroscopique
+const PLANE_TILT_CHANGE_INTERVAL = 1500; // ms
+const TILT_SMOOTHING_FACTOR = 0.03; // Controls how smoothly the tilt changes
+const GYRO_COMPENSATION_FACTOR = -3.5; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
@@ -49,8 +49,10 @@ const welcomeScreen = document.getElementById("welcome-screen")!;
 const orientationScreen = document.getElementById("orientation-screen")!;
 const gameScreen = document.getElementById("game-screen")!;
 const gameoverScreen = document.getElementById("gameover-screen")!;
+const gameoverActions = document.getElementById("gameover-actions")!;
 const startButton = document.getElementById("start-button")!;
 const restartButton = document.getElementById("restart-button")!;
+const installButton = document.getElementById("install-button")!;
 const skyVideo = document.querySelector<HTMLVideoElement>("#sky-video")!;
 const copilot = document.querySelector<HTMLImageElement>("#copilot")!;
 const detectionBar = document.getElementById("detection-bar")!;
@@ -63,11 +65,6 @@ document.body.appendChild(debugWindow);
 
 // PWA Installation
 let deferredPrompt: any;
-const installButton = document.createElement("button");
-installButton.classList.add("install-button");
-installButton.textContent = "Installer l'application";
-installButton.style.display = "none";
-document.body.appendChild(installButton);
 
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
@@ -191,9 +188,7 @@ function updateEngineSound() {
 function updatePlaneAssiette() {
   const now = Date.now();
   if (now - lastTiltChange > PLANE_TILT_CHANGE_INTERVAL) {
-    // Reduce the maximum change amount to make transitions less abrupt
-    const maxChange = MAX_TILT * 0.7;
-    targetPlaneAssiette = Math.random() * maxChange * 2 - maxChange;
+    targetPlaneAssiette = Math.random() * MAX_TILT * 2 - MAX_TILT;
     lastTiltChange = now;
   }
 
@@ -267,12 +262,11 @@ function updateGameState(timestamp: number) {
 
     if (isDiscoMode) {
       detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
-      updateDetectionBar();
-
-      if (detectionLevel >= DETECTION_MAX_TIME) {
-        gameState = "gameover";
-        handleGameOver();
-      }
+    }
+    updateDetectionBar();
+    if (detectionLevel >= DETECTION_MAX_TIME) {
+      gameState = "gameover";
+      handleGameOver();
     }
 
     // Update only sky video rotation, not the cockpit
@@ -313,12 +307,15 @@ function startGame() {
   oscillator.type = "sawtooth";
   gainNode.gain.value = 0.1;
 
-  checkOrientation();
+  gameoverActions.classList.add("hidden");
+  copilot.style.left = "50%";
+
   showScreen("game-screen");
   skyVideo.play();
   oscillator.start();
 
   requestFullscreen();
+  checkOrientation();
 
   requestAnimationFrame(updateGameState); // Start the game loop
 }
@@ -331,7 +328,7 @@ function handleGameOver() {
   explosionSound.play();
 
   setTimeout(() => {
-    restartButton.classList.remove("hidden");
+    gameoverActions.classList.remove("hidden");
   }, 2000);
 }
 
