@@ -10,8 +10,8 @@
     <meta name="theme-color" content="#000033" />
     <link rel="manifest" href="/disco-flight/manifest.json" />
     <title>DiscoFlight</title>
-    <script type="module" crossorigin src="/disco-flight/assets/index-WRkqu8iv.js"></script>
-    <link rel="stylesheet" crossorigin href="/disco-flight/assets/index-D8idDE7z.css">
+    <script type="module" crossorigin src="/disco-flight/assets/index-CXPKvSj_.js"></script>
+    <link rel="stylesheet" crossorigin href="/disco-flight/assets/index-E9rRNfAI.css">
   </head>
   <body>
     <div id="app">
@@ -55,6 +55,7 @@
       <!-- Écran de jeu -->
       <div id="game-screen" class="screen hidden">
         <div id="detection-bar"></div>
+        <div id="time-counter">0.00</div>
         <video id="sky-video" loop muted playsinline>
           <source src="/disco-flight/assets/sky-view-Iyii7iu-.mp4" type="video/mp4" />
         </video>
@@ -66,6 +67,7 @@
       <div id="gameover-screen" class="screen hidden">
         <img id="explosion" src="/disco-flight/assets/explosion-9TfwVo-4.jpg" alt="Explosion" />
         <div id="gameover-actions">
+          <div id="final-score">Score: 0.00</div>
           <button id="restart-button">Recommencer</button>
           <button id="install-button">Installer</button>
         </div>

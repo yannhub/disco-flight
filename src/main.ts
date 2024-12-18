@@ -30,6 +30,8 @@ let lastTiltChange = Date.now();
 let playerTilt = 0; // Nouvelle variable pour stocker l'inclinaison du joueur
 let discoMusicPosition = 0; // Store the music position when pausing
 let lastFrameTime = 0; // Store last frame timestamp
+let gameStartTime = 0;
+let currentTime = 0;
 
 // Audio elements
 let engineSound: AudioContext;
@@ -56,6 +58,8 @@ const installButton = document.getElementById("install-button")!;
 const skyVideo = document.querySelector<HTMLVideoElement>("#sky-video")!;
 const copilot = document.querySelector<HTMLImageElement>("#copilot")!;
 const detectionBar = document.getElementById("detection-bar")!;
+const timeCounter = document.getElementById("time-counter")!;
+const finalScore = document.getElementById("final-score")!;
 
 // Create debug window
 const debugWindow = document.createElement("div");
@@ -255,6 +259,11 @@ function updateGameState(timestamp: number) {
     const deltaTime = (timestamp - lastFrameTime) / 1000;
     if (deltaTime >= 1 / 60) {
       lastFrameTime = timestamp;
+
+      // Update current time
+      currentTime = (timestamp - gameStartTime) / 100;
+      timeCounter.textContent = currentTime.toFixed(0);
+
       updatePlaneAssiette();
       updateCopilotPosition();
       updateEngineSound();
@@ -297,7 +306,9 @@ function startGame() {
   planeAssiette = 0;
   targetPlaneAssiette = 0;
   isDiscoMode = false;
-  lastFrameTime = performance.now(); // Initialize the last frame time
+  lastFrameTime = performance.now();
+  gameStartTime = lastFrameTime;
+  currentTime = 0;
 
   // Initialize audio context after user interaction
   engineSound = new AudioContext();
@@ -323,6 +334,7 @@ function startGame() {
 
 function handleGameOver() {
   gameState = "gameover";
+  finalScore.textContent = `Score: ${currentTime.toFixed(2)}`;
   showScreen("gameover-screen");
   stopDiscoMode();
   oscillator.stop();
@@ -330,7 +342,7 @@ function handleGameOver() {
 
   setTimeout(() => {
     gameoverActions.classList.remove("hidden");
-  }, 2000);
+  }, 1000);
 }
 
 // Event Listeners

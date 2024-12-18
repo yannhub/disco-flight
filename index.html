@@ -53,6 +53,7 @@
       <!-- Écran de jeu -->
       <div id="game-screen" class="screen hidden">
         <div id="detection-bar"></div>
+        <div id="time-counter">0.00</div>
         <video id="sky-video" loop muted playsinline>
           <source src="./src/assets/sky-view.mp4" type="video/mp4" />
         </video>
@@ -64,6 +65,7 @@
       <div id="gameover-screen" class="screen hidden">
         <img id="explosion" src="./src/assets/explosion.jpg" alt="Explosion" />
         <div id="gameover-actions">
+          <div id="final-score">Score: 0.00</div>
           <button id="restart-button">Recommencer</button>
           <button id="install-button">Installer</button>
         </div>
