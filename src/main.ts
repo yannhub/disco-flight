@@ -63,33 +63,33 @@ document.body.appendChild(debugWindow);
 
 // PWA Installation
 let deferredPrompt: any;
-const installButton = document.createElement('button');
-installButton.classList.add('install-button');
-installButton.textContent = 'Installer l\'application';
-installButton.style.display = 'none';
+const installButton = document.createElement("button");
+installButton.classList.add("install-button");
+installButton.textContent = "Installer l'application";
+installButton.style.display = "none";
 document.body.appendChild(installButton);
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  installButton.style.display = 'block';
+  installButton.style.display = "block";
 });
 
-installButton.addEventListener('click', async () => {
+installButton.addEventListener("click", async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('Application installée');
+    if (outcome === "accepted") {
+      console.log("Application installée");
     }
     deferredPrompt = null;
-    installButton.style.display = 'none';
+    installButton.style.display = "none";
   }
 });
 
-window.addEventListener('appinstalled', () => {
-  console.log('Application installée avec succès');
-  installButton.style.display = 'none';
+window.addEventListener("appinstalled", () => {
+  console.log("Application installée avec succès");
+  installButton.style.display = "none";
   deferredPrompt = null;
 });
 
@@ -289,6 +289,13 @@ function handleDeviceOrientation(event: DeviceOrientationEvent) {
   }
 }
 
+function requestFullscreen() {
+  const element = document.documentElement;
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  }
+}
+
 function startGame() {
   gameState = "playing";
   detectionLevel = 0;
@@ -310,6 +317,8 @@ function startGame() {
   showScreen("game-screen");
   skyVideo.play();
   oscillator.start();
+
+  requestFullscreen();
 
   requestAnimationFrame(updateGameState); // Start the game loop
 }
