@@ -110,6 +110,7 @@ function checkOrientation() {
     if (gameState === "playing") {
       showScreen("orientation-screen");
       // Pause game elements
+      stopDiscoMode();
       skyVideo.pause();
       if (engineSound) {
         oscillator.stop();
@@ -135,7 +136,8 @@ function checkOrientation() {
           oscillator.type = "sawtooth";
           oscillator.start();
         }
-        updateGameState(performance.now());
+        lastFrameTime = performance.now();
+        updateGameState(lastFrameTime);
       } else {
         showScreen(
           gameState === "welcome" ? "welcome-screen" : "gameover-screen"
