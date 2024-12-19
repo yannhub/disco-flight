@@ -9,13 +9,13 @@ type Screen =
   | "gameover-screen";
 
 // Constants
-const MAX_TILT = 30;
-const DETECTION_MAX_TIME = 25; // seconds
-const DISCO_COOLDOWN = 5; // seconds
+const MAX_TILT = 45;
+const DETECTION_MAX_TIME = 20; // seconds
+const DISCO_COOLDOWN = 3; // seconds
 const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
-const PLANE_TILT_CHANGE_INTERVAL = 1500; // ms
-const TILT_SMOOTHING_FACTOR = 0.5; // Controls how smoothly the tilt changes
-const PLAYER_TILT_SMOOTHING_FACTOR = 0.1;
+const PLANE_TILT_CHANGE_INTERVAL = 1000; // ms
+const TILT_SMOOTHING_FACTOR = 0.04; // Controls how smoothly the tilt changes
+const PLAYER_TILT_SMOOTHING_FACTOR = 0.01;
 const GYRO_COMPENSATION_FACTOR = -4; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
@@ -155,6 +155,8 @@ function updateDetectionBar() {
 }
 
 function startDiscoMode() {
+  navigator.vibrate(200);
+
   if (isDiscoMode) {
     if (discoTimeout) {
       clearTimeout(discoTimeout);
@@ -200,11 +202,8 @@ function updatePlaneAssiette() {
   }
 
   // Smoothly interpolate between current and target tilt
-  if (planeAssiette > targetPlaneAssiette) {
-    planeAssiette -= TILT_SMOOTHING_FACTOR;
-  } else if (planeAssiette < targetPlaneAssiette) {
-    planeAssiette += TILT_SMOOTHING_FACTOR;
-  }
+  planeAssiette +=
+    (targetPlaneAssiette - planeAssiette) * TILT_SMOOTHING_FACTOR;
 }
 
 function updateCopilotPosition() {

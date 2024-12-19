@@ -88,6 +88,13 @@ button:hover {
 #orientation-screen {
   background-color: var(--background-color);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  text-align: center;
+  font-size: 1.3rem;
 }
 
 /* Game Screen */
@@ -143,7 +150,6 @@ button:hover {
   transform: translateX(-50%);
   width: 100%;
   height: auto;
-  transition: transform 0.3s ease;
 }
 
 #copilot {
@@ -153,7 +159,6 @@ button:hover {
   transform: translateX(-50%);
   width: 20%;
   height: auto;
-  transition: left 0.3s ease;
 }
 
 /* Game Over Screen */
