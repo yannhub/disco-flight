@@ -13,7 +13,7 @@ const MAX_TILT = 45;
 const DETECTION_MAX_TIME = 20; // seconds
 const DISCO_COOLDOWN = 3; // seconds
 const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
-const PLANE_TILT_CHANGE_INTERVAL = 1500; // ms
+const PLANE_TILT_CHANGE_INTERVAL = 1000; // ms
 const TILT_SMOOTHING_FACTOR = 0.15; // Controls how smoothly the tilt changes
 const PLAYER_TILT_SMOOTHING_FACTOR = 0.01;
 const GYRO_COMPENSATION_FACTOR = -3; // Force de la compensation gyroscopique
@@ -132,9 +132,7 @@ function checkOrientation() {
         skyVideo.play();
         // Reinitialize audio context as it might have been stopped
         if (engineSound) {
-          oscillator = engineSound.createOscillator();
-          oscillator.connect(gainNode);
-          oscillator.type = "sawtooth";
+          initOscillator();
           oscillator.start();
         }
         lastFrameTime = performance.now();
@@ -345,12 +343,10 @@ function startGame() {
 
   // Initialize audio context after user interaction
   engineSound = new AudioContext();
-  oscillator = engineSound.createOscillator();
   gainNode = engineSound.createGain();
-  oscillator.connect(gainNode);
   gainNode.connect(engineSound.destination);
-  oscillator.type = "sawtooth";
   gainNode.gain.value = 0.1;
+  initOscillator();
 
   // Hack: start and pause the audio to force initialization on iOS
   discoMusic.play();
@@ -369,6 +365,12 @@ function startGame() {
   checkOrientation();
 
   requestAnimationFrame(updateGameState); // Start the game loop
+}
+
+function initOscillator() {
+  oscillator = engineSound.createOscillator();
+  oscillator.connect(gainNode);
+  oscillator.type = "sawtooth";
 }
 
 function handleGameOver() {
