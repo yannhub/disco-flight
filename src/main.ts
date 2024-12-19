@@ -13,10 +13,10 @@ const MAX_TILT = 45;
 const DETECTION_MAX_TIME = 20; // seconds
 const DISCO_COOLDOWN = 3; // seconds
 const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
-const PLANE_TILT_CHANGE_INTERVAL = 1000; // ms
-const TILT_SMOOTHING_FACTOR = 0.04; // Controls how smoothly the tilt changes
+const PLANE_TILT_CHANGE_INTERVAL = 1500; // ms
+const TILT_SMOOTHING_FACTOR = 0.15; // Controls how smoothly the tilt changes
 const PLAYER_TILT_SMOOTHING_FACTOR = 0.01;
-const GYRO_COMPENSATION_FACTOR = -4; // Force de la compensation gyroscopique
+const GYRO_COMPENSATION_FACTOR = -3; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
@@ -194,6 +194,10 @@ function updateEngineSound() {
     baseFrequency + (planeAssiette / MAX_TILT) * frequencyRange;
 }
 
+function easeInOutQuad(t: number): number {
+  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
 function updatePlaneAssiette() {
   const now = Date.now();
   if (now - lastTiltChange > PLANE_TILT_CHANGE_INTERVAL) {
@@ -201,9 +205,9 @@ function updatePlaneAssiette() {
     lastTiltChange = now;
   }
 
-  // Smoothly interpolate between current and target tilt
-  planeAssiette +=
-    (targetPlaneAssiette - planeAssiette) * TILT_SMOOTHING_FACTOR;
+  // Smoothly interpolate between current and target tilt using ease function
+  const t = TILT_SMOOTHING_FACTOR;
+  planeAssiette += (targetPlaneAssiette - planeAssiette) * easeInOutQuad(t);
 }
 
 function updateCopilotPosition() {
@@ -238,7 +242,7 @@ function updateCopilotPosition() {
   copilot.style.left = `${newPosition}%`;
 
   // Check if copilot hits the edges
-  if (newPosition <= 10 || newPosition >= 90) {
+  if (newPosition <= 13 || newPosition >= 87) {
     startDiscoMode();
   }
 }
