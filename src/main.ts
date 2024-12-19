@@ -9,13 +9,14 @@ type Screen =
   | "gameover-screen";
 
 // Constants
-const MAX_TILT = 40;
+const MAX_TILT = 30;
 const DETECTION_MAX_TIME = 25; // seconds
 const DISCO_COOLDOWN = 5; // seconds
-const COPILOT_BASE_SPEED = 4; // Base speed for copilot movement
+const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
 const PLANE_TILT_CHANGE_INTERVAL = 1500; // ms
-const TILT_SMOOTHING_FACTOR = 0.03; // Controls how smoothly the tilt changes
-const GYRO_COMPENSATION_FACTOR = -3.5; // Force de la compensation gyroscopique
+const TILT_SMOOTHING_FACTOR = 0.5; // Controls how smoothly the tilt changes
+const PLAYER_TILT_SMOOTHING_FACTOR = 0.1;
+const GYRO_COMPENSATION_FACTOR = -4; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
 
 // Game variables
@@ -199,8 +200,11 @@ function updatePlaneAssiette() {
   }
 
   // Smoothly interpolate between current and target tilt
-  planeAssiette +=
-    (targetPlaneAssiette - planeAssiette) * TILT_SMOOTHING_FACTOR;
+  if (planeAssiette > targetPlaneAssiette) {
+    planeAssiette -= TILT_SMOOTHING_FACTOR;
+  } else if (planeAssiette < targetPlaneAssiette) {
+    planeAssiette += TILT_SMOOTHING_FACTOR;
+  }
 }
 
 function updateCopilotPosition() {
@@ -292,13 +296,37 @@ function handleDeviceOrientation(event: DeviceOrientationEvent) {
   if (gameState === "playing") {
     // En mode paysage, beta contrôle l'inclinaison gauche/droite
     playerTilt = event.beta || 0;
+
+    const beta = event.beta || 0;
+    const gamma = event.gamma || 0;
+
+    const inclinationRadians = Math.atan2(
+      Math.sin((gamma * Math.PI) / 180),
+      Math.tan((beta * Math.PI) / 180)
+    );
+    const inclinationDegrees = (inclinationRadians * 180) / Math.PI;
+
+    // Lissage
+    playerTilt =
+      playerTilt * (1 - PLAYER_TILT_SMOOTHING_FACTOR) +
+      inclinationDegrees * PLAYER_TILT_SMOOTHING_FACTOR;
   }
 }
 
 function requestFullscreen() {
-  const element = document.documentElement;
+  const element = document.documentElement as HTMLElement & {
+    mozRequestFullScreen(): Promise<void>;
+    webkitRequestFullscreen(): Promise<void>;
+    msRequestFullscreen(): Promise<void>;
+  };
   if (element.requestFullscreen) {
     element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
   }
 }
 
@@ -320,6 +348,12 @@ function startGame() {
   gainNode.connect(engineSound.destination);
   oscillator.type = "sawtooth";
   gainNode.gain.value = 0.1;
+
+  // Hack: start and pause the audio to force initialization on iOS
+  discoMusic.play();
+  discoMusic.pause();
+  explosionSound.play();
+  explosionSound.pause();
 
   gameoverActions.classList.add("hidden");
   copilot.style.left = "50%";
