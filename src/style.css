@@ -52,6 +52,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  text-shadow: 2px 2px 4px rgb(190, 31, 198);
 }
 
 .story-container {
@@ -123,17 +124,6 @@ button:hover {
   top: 0;
 }
 
-#time-counter {
-  position: fixed;
-  top: calc(var(--detection-bar-height) + 14px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 22px;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  z-index: 100;
-}
-
 #sky-video {
   position: absolute;
   top: -25%;
@@ -159,6 +149,30 @@ button:hover {
   transform: translateX(-50%);
   width: 20%;
   height: auto;
+}
+
+#time-counter {
+  position: fixed;
+  top: calc(var(--detection-bar-height) + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#disco-ball {
+  position: absolute;
+  top: -25%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 25%;
+  width: auto;
+  transition: top 0.75s ease;
+}
+
+.disco-mode #disco-ball {
+  top: var(--detection-bar-height);
 }
 
 /* Game Over Screen */
