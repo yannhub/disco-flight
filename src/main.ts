@@ -14,7 +14,7 @@ const DETECTION_MAX_TIME = 20; // seconds
 const DISCO_COOLDOWN = 3; // seconds
 const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
 const PLANE_TILT_CHANGE_INTERVAL = 1000; // ms
-const TILT_SMOOTHING_FACTOR = 0.15; // Controls how smoothly the tilt changes
+const PLANE_TILT_SMOOTHING_FACTOR = 20; // Controls how smoothly the tilt changes
 const PLAYER_TILT_SMOOTHING_FACTOR = 0.01;
 const GYRO_COMPENSATION_FACTOR = -3; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
@@ -24,6 +24,7 @@ let gameState: GameState = "welcome";
 let landscapeMode = false;
 let planeAssiette = 0;
 let targetPlaneAssiette = 0; // New variable to store the target tilt
+let planeTiltSpeed = PLANE_TILT_SMOOTHING_FACTOR;
 let detectionLevel = 0;
 let isDiscoMode = false;
 let discoTimeout: number | null = null;
@@ -31,6 +32,7 @@ let lastTiltChange = Date.now();
 let playerTilt = 0; // Nouvelle variable pour stocker l'inclinaison du joueur
 let discoMusicPosition = 0; // Store the music position when pausing
 let lastFrameTime = 0; // Store last frame timestamp
+let deltaTime = 0;
 let gameStartTime = 0;
 let currentTime = 0;
 
@@ -148,6 +150,9 @@ function checkOrientation() {
 }
 
 function updateDetectionBar() {
+  if (isDiscoMode) {
+    detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
+  }
   const percentage = (detectionLevel / DETECTION_MAX_TIME) * 100;
   detectionBar.style.setProperty("--detection-percentage", `${percentage}%`);
 }
@@ -194,20 +199,24 @@ function updateEngineSound() {
     baseFrequency + (planeAssiette / MAX_TILT) * frequencyRange;
 }
 
-function easeInOutQuad(t: number): number {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-}
-
 function updatePlaneAssiette() {
   const now = Date.now();
   if (now - lastTiltChange > PLANE_TILT_CHANGE_INTERVAL) {
     targetPlaneAssiette = Math.random() * MAX_TILT * 2 - MAX_TILT;
     lastTiltChange = now;
+    planeTiltSpeed =
+      Math.random() * PLANE_TILT_SMOOTHING_FACTOR + PLANE_TILT_SMOOTHING_FACTOR;
   }
 
-  // Smoothly interpolate between current and target tilt using ease function
-  const t = TILT_SMOOTHING_FACTOR;
-  planeAssiette += (targetPlaneAssiette - planeAssiette) * easeInOutQuad(t);
+  // Smoothly interpolate between current and target tilt
+  if (targetPlaneAssiette > planeAssiette) {
+    planeAssiette += deltaTime * planeTiltSpeed;
+  } else {
+    planeAssiette -= deltaTime * planeTiltSpeed;
+  }
+
+  // Update only sky video rotation, not the cockpit
+  skyVideo.style.transform = `rotate(${-planeAssiette}deg)`;
 }
 
 function updateCopilotPosition() {
@@ -265,34 +274,26 @@ function updateDebugInfo() {
 function updateGameState(timestamp: number) {
   if (gameState === "playing" && landscapeMode) {
     // Calculate delta time in seconds
-    const deltaTime = (timestamp - lastFrameTime) / 1000;
-    if (deltaTime >= 1 / 60) {
-      lastFrameTime = timestamp;
+    deltaTime = (timestamp - lastFrameTime) / 1000;
+    lastFrameTime = timestamp;
 
-      // Update current time
-      currentTime = (timestamp - gameStartTime) / 100;
-      timeCounter.textContent = currentTime.toFixed(0);
+    // Update current time
+    currentTime = (timestamp - gameStartTime) / 100;
+    timeCounter.textContent = currentTime.toFixed(0);
 
-      updatePlaneAssiette();
-      updateCopilotPosition();
-      updateEngineSound();
-      updateDebugInfo();
+    updatePlaneAssiette();
+    updateCopilotPosition();
+    updateEngineSound();
+    updateDebugInfo();
+    updateDetectionBar();
 
-      if (isDiscoMode) {
-        detectionLevel += deltaTime; // Use actual time elapsed instead of fixed 1/60
-      }
-      updateDetectionBar();
-      if (detectionLevel >= DETECTION_MAX_TIME) {
-        gameState = "gameover";
-        handleGameOver();
-      }
-
-      // Update only sky video rotation, not the cockpit
-      skyVideo.style.transform = `rotate(${-planeAssiette}deg)`;
+    if (detectionLevel >= DETECTION_MAX_TIME) {
+      gameState = "gameover";
+      handleGameOver();
     }
-
-    requestAnimationFrame(updateGameState);
   }
+
+  requestAnimationFrame(updateGameState);
 }
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
