@@ -10,14 +10,15 @@ type Screen =
 
 // Constants
 const MAX_TILT = 45;
-const DETECTION_MAX_TIME = 20; // seconds
+const DETECTION_MAX_TIME = 15; // seconds
 const DISCO_COOLDOWN = 3; // seconds
-const COPILOT_BASE_SPEED = 3; // Base speed for copilot movement
+const COPILOT_BASE_SPEED = 2.5; // Base speed for copilot movement
 const PLANE_TILT_CHANGE_INTERVAL = 1000; // ms
 const PLANE_TILT_SMOOTHING_FACTOR = 20; // Controls how smoothly the tilt changes
 const PLAYER_TILT_SMOOTHING_FACTOR = 0.01;
 const GYRO_COMPENSATION_FACTOR = -3; // Force de la compensation gyroscopique
 const DEBUG_MODE = false; // Flag pour afficher/masquer la fenêtre de debug
+const PLANE_TILT_THRESHOLD = 0.5; // Threshold to stop oscillation
 
 // Game variables
 let gameState: GameState = "welcome";
@@ -208,11 +209,12 @@ function updatePlaneAssiette() {
       Math.random() * PLANE_TILT_SMOOTHING_FACTOR + PLANE_TILT_SMOOTHING_FACTOR;
   }
 
-  // Smoothly interpolate between current and target tilt
-  if (targetPlaneAssiette > planeAssiette) {
-    planeAssiette += deltaTime * planeTiltSpeed;
-  } else {
-    planeAssiette -= deltaTime * planeTiltSpeed;
+  if (Math.abs(targetPlaneAssiette - planeAssiette) > PLANE_TILT_THRESHOLD) {
+    if (targetPlaneAssiette > planeAssiette) {
+      planeAssiette += deltaTime * planeTiltSpeed;
+    } else {
+      planeAssiette -= deltaTime * planeTiltSpeed;
+    }
   }
 
   // Update only sky video rotation, not the cockpit
@@ -291,9 +293,9 @@ function updateGameState(timestamp: number) {
       gameState = "gameover";
       handleGameOver();
     }
-  }
 
-  requestAnimationFrame(updateGameState);
+    requestAnimationFrame(updateGameState);
+  }
 }
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
