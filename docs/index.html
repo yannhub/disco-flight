@@ -10,8 +10,8 @@
     <meta name="theme-color" content="#000033" />
     <link rel="manifest" href="/disco-flight/manifest.json" />
     <title>DiscoFlight</title>
-    <script type="module" crossorigin src="/disco-flight/assets/index-Tm3rb3A4.js"></script>
-    <link rel="stylesheet" crossorigin href="/disco-flight/assets/index-BTMllnXi.css">
+    <script type="module" crossorigin src="/disco-flight/assets/index-CZyrRtqf.js"></script>
+    <link rel="stylesheet" crossorigin href="/disco-flight/assets/index-DpXP73mZ.css">
   </head>
   <body>
     <div id="app">
@@ -49,6 +49,12 @@
 
       <!-- Écran d'orientation -->
       <div id="orientation-screen" class="screen hidden">
+        <button
+          id="toggle-fullscreen-orientation"
+          class="toggle-fullscreen-button"
+        >
+          ⛶
+        </button>
         <p>
           Utilisez l'orientation du téléphone pour garder l'équilibre et éviter
           les boutons rouges
@@ -75,6 +81,12 @@
 
       <!-- Écran de game over -->
       <div id="gameover-screen" class="screen hidden">
+        <button
+          id="toggle-fullscreen-gameover"
+          class="toggle-fullscreen-button"
+        >
+          ⛶
+        </button>
         <img id="explosion" src="/disco-flight/assets/explosion-9TfwVo-4.jpg" alt="Explosion" />
         <div id="gameover-actions">
           <div id="final-score">Score: 0.00</div>

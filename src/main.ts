@@ -336,6 +336,33 @@ function requestFullscreen() {
   }
 }
 
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if ((document as any).mozCancelFullScreen) {
+    (document as any).mozCancelFullScreen();
+  } else if ((document as any).webkitExitFullscreen) {
+    (document as any).webkitExitFullscreen();
+  } else if ((document as any).msExitFullscreen) {
+    (document as any).msExitFullscreen();
+  }
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    requestFullscreen();
+  } else {
+    exitFullscreen();
+  }
+}
+
+document
+  .getElementById("toggle-fullscreen-orientation")
+  ?.addEventListener("click", toggleFullscreen);
+document
+  .getElementById("toggle-fullscreen-gameover")
+  ?.addEventListener("click", toggleFullscreen);
+
 function startGame() {
   gameState = "playing";
   detectionLevel = 0;
