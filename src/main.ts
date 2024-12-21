@@ -153,7 +153,9 @@ function updateDetectionBar() {
 }
 
 function startDiscoMode() {
-  navigator.vibrate(200);
+  if (navigator.vibrate) {
+    navigator.vibrate(200);
+  }
 
   if (isDiscoMode) {
     if (discoTimeout) {
