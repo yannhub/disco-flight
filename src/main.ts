@@ -37,6 +37,9 @@ let deltaTime = 0;
 let gameStartTime = 0;
 let currentTime = 0;
 
+// Wakelock
+let wakeLock: WakeLockSentinel | null;
+
 // Audio elements
 let engineSound: AudioContext;
 let oscillator: OscillatorNode;
@@ -363,7 +366,7 @@ document
   .getElementById("toggle-fullscreen-gameover")
   ?.addEventListener("click", toggleFullscreen);
 
-function startGame() {
+async function startGame() {
   gameState = "playing";
   detectionLevel = 0;
   planeAssiette = 0;
@@ -372,6 +375,11 @@ function startGame() {
   lastFrameTime = performance.now();
   gameStartTime = lastFrameTime;
   currentTime = 0;
+
+  // Empeche l'ecran de se mettre en veille
+  if ("wakeLock" in navigator) {
+    wakeLock = await navigator.wakeLock.request("screen");
+  }
 
   // Initialize audio context after user interaction
   engineSound = new AudioContext();
@@ -412,6 +420,12 @@ function handleGameOver() {
   stopDiscoMode();
   oscillator.stop();
   explosionSound.play();
+
+  if (wakeLock) {
+    wakeLock.release().then(() => {
+      wakeLock = null;
+    });
+  }
 
   setTimeout(() => {
     gameoverActions.classList.remove("hidden");
